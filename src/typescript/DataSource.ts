@@ -52,6 +52,11 @@ export class DataSource<T> {
         return new DataSource(lst);
     }
 
+    /** 
+     * Левое соединение таблиц
+     * @param с какой таблице происходит соединение
+     * @param функция возвращающая на каждую левую строку 0 или более строк из правой таблицы
+     */
     join<E>( ds : DataSource<E>, fetching:(ds:DataSource<E>, a:T)=>E[] ) : DataSource<{a:T,b:E}> {
         let lst : {a:T,b:E}[] = []
         for( let i=0; i<this.values.length;i++ ){
