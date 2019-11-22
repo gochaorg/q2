@@ -72,4 +72,19 @@ export class DataSource<T> {
         }
         return new DataSource(lst)
     }
+
+    select<Row,Col,Input extends { [name:string]:(row:T)=>Col },Output extends {[K in keyof Input]:ReturnType<Input[K]>}>(
+        input:Input
+    ):DataSource<Output> {
+        const rezultRows : {[n:string]:any}[] = [];
+        for( const srcRow of this.values ){
+            const row : {[n:string]:any} = {}
+            for( const tKey in input ){
+                row[tKey] = input[tKey](srcRow)
+            }
+            rezultRows.push(row)
+        }
+        const ds = new DataSource(rezultRows as Output[])
+        return ds;
+    }
 }
