@@ -1,12 +1,10 @@
-@Grapes([
-  @Grab('io.ratpack:ratpack-groovy:1.6.1'),
-  @Grab('org.slf4j:slf4j-simple:1.7.25')
-])
+package xyz.cofe.q2
+
 import static ratpack.groovy.Groovy.ratpack
 
 ratpack {
-    serverConfig { conf ->
-        conf.port( 19000 )
+    serverConfig {
+        port 19500
     }
     handlers {
         get {
