@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "@types/esprima": "^4.0.2",
     "esprima": "^4.0.1",
     "typescript": "^3.7.2"
   },
