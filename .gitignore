@@ -5,3 +5,6 @@ package-lock.json
 .gradle
 .build
 build
+.classpath
+.project
+.settings
