@@ -9,6 +9,7 @@ buildscript {
 
 apply plugin: "io.ratpack.ratpack-groovy"
 apply plugin: "idea"
+apply plugin: "groovy"
 
 //plugins {
 //    id 'groovy'
@@ -19,6 +20,7 @@ group 'xyz.cofe'
 version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 repositories {
     jcenter()

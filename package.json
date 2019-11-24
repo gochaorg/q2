@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "@types/esprima": "^4.0.2",
+    "axios": "^0.19.0",
     "esprima": "^4.0.1",
     "typescript": "^3.7.2"
   },

@@ -2,9 +2,9 @@ import { Foo, Bar } from "./model"
 import { DataSource } from "./DataSource"
 
 let src1:Foo[] = [
-    new Foo(1,"fooA"), 
-    new Foo(2,"fooB"),
-    new Foo(3,"fooC")
+    {id:1,name:"fooA"},
+    {id:2,name:"fooB"},
+    {id:3,name:"fooC"}
 ]
 
 let src2:Bar[] = [

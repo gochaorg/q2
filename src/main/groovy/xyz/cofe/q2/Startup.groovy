@@ -1,5 +1,7 @@
 package xyz.cofe.q2
 
+import xyz.cofe.q2.model.Foo
+
 import static ratpack.groovy.Groovy.ratpack
 
 ratpack {
@@ -10,8 +12,11 @@ ratpack {
         get {
             render "Hello World!"
         }
-        get(":name") {
-            render "Hello $pathTokens.name!"
+//        get(":name") {
+//            render "Hello $pathTokens.name!"
+//        }
+        get( "test" ){
+            new JsonOut().write(response, Foo, RootData.instance.foo )
         }
     }
 }

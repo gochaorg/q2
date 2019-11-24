@@ -1,16 +1,20 @@
-export class Foo {
-    constructor(id:number=-1, name:string='foo'){
-        this._id = id
-        this._name = name
-    }
+// export class Foo {
+//     constructor(id:number=-1, name:string='foo'){
+//         this._id = id
+//         this._name = name
+//     }
 
-    private _id : number = 0
-    get id():number { return this._id; }
-    set id(newval:number){ this._id = newval; }
+//     _id : number = 0
+//     get id():number { return this._id; }
+//     set id(newval:number){ this._id = newval; }
 
-    private _name : string = 'none'
-    get name():string { return this._name }
-    set name(v:string) { this._name = v }
+//     _name : string = 'none'
+//     get name():string { return this._name }
+//     set name(v:string) { this._name = v }
+// }
+export interface Foo {
+    id : number
+    name : string    
 }
 
 export class Bar {
