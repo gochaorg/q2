@@ -19,6 +19,7 @@ apply plugin: "groovy"
 group 'xyz.cofe'
 version '1.0-SNAPSHOT'
 
+// real target - java 11
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -32,3 +33,27 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     runtime "org.slf4j:slf4j-simple:1.7.25"
 }
+
+// Какая-то херьня с тестами из idea
+// не использует тестовых ресурсов 
+//sourceSets.test.resources.srcDir 'src/test/resources'
+
+//sourceSets {
+//    test {
+//        resources {
+//            srcDir 'src/test/resources'
+//        }
+//    }
+//}
+
+//sourceSets {
+//    main {
+//        groovy.srcDirs += ['src/test/resources']
+//    }
+//}
+
+task copyTestResources(type: Copy) {
+    from "${projectDir}/src/test/resources"
+    into "${buildDir}/classes/groovy/test"
+}
+compileGroovy.dependsOn copyTestResources
