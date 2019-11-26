@@ -1,5 +1,6 @@
 import ax from "axios"
-import { Foo } from './model';
+import { Foo } from './model'
+import * as parser from "esprima"
 
 interface Dataset {
     meta: {
@@ -16,16 +17,41 @@ interface Dataset {
     }[]
 }
 
-async function run1(){
-    let resultSet : Foo[] = []
-    await ax.get( 'http://localhost:19500/test' ).then( (res)=>{
-        // console.log( res.data )
-        const ds = res.data as Dataset
-        console.log( `meta.type = ${ds.meta.type}` )
-        console.log( `meta.columns:`, ds.meta.columns.map(x=>x.column) )
-        resultSet = ds.data as Foo[]
+async function fetchData<T>( 
+    url:string, 
+    data:any,
+    consumer:{
+        ok:(dataset:T[])=>any
+    }
+){
+    ax.post( url, JSON.stringify(data), {
+        headers: {
+            'accept': 'application/json',
+            'content-type': 'application/json'
+        }
+    }).then( (res)=>{
+        if( res.status>=200 && res.status<300 ){
+            const ds = res.data as Dataset
+            let resultSet : T[] = []
+
+            console.log( `meta.columns:`, ds.meta.columns.map(x=>x.column) )
+            
+            resultSet = ds.data as T[]
+            consumer.ok( resultSet )
+        }else{
+            console.error('bad status',res.status,' result=',res)
+        }
+    }).catch( (err)=>{
+        console.error( "error: ",err )
     })
-    console.log( "accepted: ", resultSet )
-    resultSet.forEach( x => console.log(`id=${x.id} name=${x.name}`))
 }
-run1()
+
+const filter1 = ( r:Foo ) => r.id == 1;
+const payLoad = {filter: parser.parseScript(filter1.toString()) }
+fetchData( 'http://localhost:19500/t2/g', payLoad, 
+    { 
+        ok:(data:Foo[])=>{
+            console.log('data:',data)
+        }
+    }
+)

@@ -73,6 +73,10 @@ export class DataSource<T> {
         return new DataSource(lst)
     }
 
+    /** 
+     * Выборка и преобразование полученных значений в целевые
+     * @param input Описывает как преобразовывать входной объект
+     */
     select<Row,Col,Input extends { [name:string]:(row:T)=>Col },Output extends {[K in keyof Input]:ReturnType<Input[K]>}>(
         input:Input
     ):DataSource<Output> {
