@@ -2,7 +2,7 @@ import ax from "axios"
 import { Foo } from './model'
 import * as parser from "esprima"
 
-interface Dataset {
+export interface Dataset {
     meta: {
         type: string,
         columns: {
@@ -17,7 +17,7 @@ interface Dataset {
     }[]
 }
 
-async function fetchData<T>( 
+export async function fetchData<T>( 
     url:string, 
     data:any,
     consumer:{
@@ -34,9 +34,12 @@ async function fetchData<T>(
             const ds = res.data as Dataset
             let resultSet : T[] = []
 
-            console.log( `meta.columns:`, ds.meta.columns.map(x=>x.column) )
+            console.log( '//fetchData() accepted data' )
+            console.log( `//fetchData() meta.columns:`, ds.meta.columns.map(x=>x.column) )
             
             resultSet = ds.data as T[]
+
+            console.log( '//fetchData() send to consumer' )
             consumer.ok( resultSet )
         }else{
             console.error('bad status',res.status,' result=',res)
@@ -46,12 +49,12 @@ async function fetchData<T>(
     })
 }
 
-const filter1 = ( r:Foo ) => r.id == 1;
-const payLoad = {filter: parser.parseScript(filter1.toString()) }
-fetchData( 'http://localhost:19500/t2/g', payLoad, 
-    { 
-        ok:(data:Foo[])=>{
-            console.log('data:',data)
-        }
-    }
-)
+// const filter1 = ( r:Foo ) => r.id == 1;
+// const payLoad = {filter: parser.parseScript(filter1.toString()) }
+// fetchData( 'http://localhost:19500/t2/g', payLoad, 
+//     { 
+//         ok:(data:Foo[])=>{
+//             console.log('data:',data)
+//         }
+//     }
+// )

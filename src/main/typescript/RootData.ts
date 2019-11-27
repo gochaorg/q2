@@ -1,5 +1,5 @@
 import { Foo, Bar } from "./model"
-import { DataSource } from "./DataSource"
+import { LocalDataSource } from "./LocalDataSource"
 
 let src1:Foo[] = [
     {id:1,name:"fooA"},
@@ -8,17 +8,17 @@ let src1:Foo[] = [
 ]
 
 let src2:Bar[] = [
-    new Bar( 3,"barA",1), new Bar( 4,"barB",1),
-    new Bar( 5,"barC",2), new Bar( 6,"barD",2),
-    new Bar( 7,"barE",1), new Bar( 8,"barF",5),
-    new Bar( 9,"barG",1), new Bar(10,"barH",5),
-    new Bar(11,"barI",2), new Bar(12,"barJ",3),
+    { id:3, name:"barA", fooId:1}, { id:4,name:"barB", fooId:1},
+    { id:5,name:"barC", fooId:2}, { id:6,name:"barD", fooId:2},
+    { id:7,name:"barE", fooId:1}, { id:8,name:"barF", fooId:5},
+    { id:9,name:"barG", fooId:1}, {id:10,name:"barH", fooId:5},
+    { id:11,name:"barI", fooId:2}, {id:12,name:"barJ", fooId:3},
     ]
 
 /**
  * Модель данных
  */
 export class RootData {
-    readonly foo = new DataSource(src1)
-    readonly bar = new DataSource(src2)
+    readonly foo = new LocalDataSource(src1)
+    readonly bar = new LocalDataSource(src2)
 }
