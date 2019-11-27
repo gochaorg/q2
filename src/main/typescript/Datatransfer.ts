@@ -4,7 +4,6 @@ import * as parser from "esprima"
 
 export interface Dataset {
     meta: {
-        type: string,
         columns: {
             column: {
                 name: string

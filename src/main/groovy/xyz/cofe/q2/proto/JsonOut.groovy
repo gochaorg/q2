@@ -1,10 +1,11 @@
-package xyz.cofe.q2
+package xyz.cofe.q2.proto
 
 import com.fasterxml.jackson.core.JsonFactory
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.ObjectMapper
-import groovy.json.StreamingJsonBuilder
 import ratpack.http.Response
+import xyz.cofe.q2.DataSource
+import xyz.cofe.q2.meta.Column
 
 /**
  * Отправка json ответа
@@ -16,28 +17,21 @@ class JsonOut {
     /** Переименование типов */
     final Map<String,String> typeMap = ['java.lang.String':'string']
 
-    public <T> void write( Response output, Class<T> resultType, DataSource<T> ds ){
+    /** Запись данных в http ответ */
+    public <T> void write( Response output, DataSource<T> ds ){
         if( output == null ) throw new IllegalArgumentException("output==null");
-        if( resultType == null ) throw new IllegalArgumentException("resultType==null");
         if( ds == null ) throw new IllegalArgumentException("ds==null");
 
         StringWriter sw = new StringWriter()
-        write(sw,resultType,ds)
+        write(sw,ds)
 
         output.send('application/json', sw.toString() )
     }
 
-    public <T> void write( Writer output, Class<T> resultType, DataSource<T> ds ){
+    /** Запись данных в writer */
+    public <T> void write( Writer output, DataSource<T> ds ){
         if( output == null ) throw new IllegalArgumentException("output==null");
-        if( resultType == null ) throw new IllegalArgumentException("resultType==null");
         if( ds == null ) throw new IllegalArgumentException("ds==null");
-
-        def propFilter = { MetaProperty prop ->
-            if( exludeProperties==null )return true
-            if( prop.name in exludeProperties )return false
-            return true
-        }
-        def props = resultType.metaClass.properties.findAll( propFilter )
 
         JsonFactory factory = new JsonFactory()
         factory.setCodec( new ObjectMapper() )
@@ -49,16 +43,13 @@ class JsonOut {
             out.writeFieldName("meta")
             out.writeStartObject()
 
-            out.writeFieldName("type")
-            out.writeString(resultType.name)
-
             out.writeFieldName("columns")
             out.writeStartArray()
-            for( MetaProperty prop : props ){
+            for( Column col: ds.columns ){
                 out.writeObject(
                     [column:
-                         [name: prop.name
-                         ,type: typeMap.getOrDefault( prop.type.name, prop.type.name )
+                         [name: col.name
+                         ,type: typeMap.getOrDefault( col.type.name, col.type.name )
                          ]
                     ]
                 )
@@ -72,9 +63,9 @@ class JsonOut {
             out.writeStartArray()
             ds.fetch({ row ->
                 def kv = [:]
-                for( MetaProperty prop : props ){
-                    def key = prop.name
-                    def val = prop.getProperty(row)
+                for( Column col : ds.columns ){
+                    def key = col.name
+                    def val = row[key]
                     kv[key] = val
                 }
                 out.writeObject(kv)

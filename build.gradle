@@ -30,10 +30,15 @@ repositories {
 
 dependencies {
     //compile 'org.codehaus.groovy:groovy-all:2.3.11'
+
+    // https://mvnrepository.com/artifact/org.codehaus.groovy/groovy-all
+    compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '3.0.0-rc-1', ext: 'pom'
+    
     testCompile group: 'junit', name: 'junit', version: '4.12'
     runtime "org.slf4j:slf4j-simple:1.7.25"
 }
 
+///////////////////////////////////////
 // Какая-то херьня с тестами из idea
 // не использует тестовых ресурсов 
 //sourceSets.test.resources.srcDir 'src/test/resources'
@@ -52,8 +57,8 @@ dependencies {
 //    }
 //}
 
-task copyTestResources(type: Copy) {
-    from "${projectDir}/src/test/resources"
-    into "${buildDir}/classes/groovy/test"
-}
-compileGroovy.dependsOn copyTestResources
+//task copyTestResources(type: Copy) {
+//    from "${projectDir}/src/test/resources"
+//    into "${buildDir}/classes/groovy/test"
+//}
+//compileGroovy.dependsOn copyTestResources

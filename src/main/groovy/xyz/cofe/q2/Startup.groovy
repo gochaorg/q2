@@ -4,9 +4,12 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import ratpack.func.Action
 import ratpack.http.Status
-import xyz.cofe.q2.model.Foo
 
-import java.lang.reflect.Field
+import xyz.cofe.q2.model.Foo
+import xyz.cofe.q2.proto.JsonOut
+import xyz.cofe.q2.query.PlanBuilder
+
+import static xyz.cofe.q2.RootData.instance as rootData
 
 import static ratpack.groovy.Groovy.ratpack
 import static ratpack.jackson.Jackson.json
@@ -14,32 +17,6 @@ import static ratpack.jackson.Jackson.jsonNode
 
 String JSON_TYPE = 'application/json'
 
-// Создание метаданных
-println "build meta data"
-def metaData = [:]
-
-RootData.instance.getClass().getDeclaredFields().findAll {
-    DataSource.isAssignableFrom( it.type )
-}.collect { field ->
-    def gt = field.getGenericType()
-    if( gt instanceof java.lang.reflect.ParameterizedType ){
-        def pt = gt as java.lang.reflect.ParameterizedType
-        def tparams = pt.actualTypeArguments
-        if( tparams.length==1 )return [
-            name:field.name,
-            type:tparams[0],
-            field: field
-        ]
-    }
-    return [name:field.name, type:gt.class, field: field]
-}.each {
-    metaData[it.name] = [
-        name: it.name,
-        type: it.type,
-        field: it.field,
-        value: RootData.instance[it.name]
-    ]
-}
 
 // запуск сервера
 ratpack {
@@ -56,8 +33,8 @@ ratpack {
         prefix( 'meta' ){
             get( 'roots' ){
                 def roots = [:]
-                metaData.each { name, info -> roots[name] = info.type.name }
-                render json()
+                rootData.meta.dataSources.each { name, info -> roots[name] = info.dataType }
+                render json(roots)
             }
         }
         //endregion
@@ -70,23 +47,15 @@ ratpack {
                 post { ctx ->
                     parse( jsonNode() ).then { JsonNode queryNode ->
                         println "queryNode:\n $queryNode"
+
                         //render "ok"
                         ObjectMapper om = new ObjectMapper()
                         def query = om.treeToValue(queryNode, Map)
 
-                        if( query.type == 'From' ){
-                            if( !metaData.containsKey(query.name) ){
-                                response.status(404)
-                                response.send("$query.name not found")
-                                return
-                            }
+                        def expr = new PlanBuilder(rootData.meta).build(query)
 
-                            // full scan
-                            new JsonOut().write(response, metaData[query.name].type, metaData[query.name].value)
-                        }
-
-                        response.status(Status.BAD_REQUEST)
-                        response.send("undefined query type $query.type")
+                        // full scan
+                        new JsonOut().write(response, expr.compile())
                     }
                 }
             }

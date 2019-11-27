@@ -2,11 +2,10 @@ package xyz.cofe.q2
 
 import com.fasterxml.jackson.databind.JsonNode
 import ratpack.func.Action
-import ratpack.jackson.Jackson
 import xyz.cofe.q2.model.Foo
+import xyz.cofe.q2.proto.JsonOut
 
 import static ratpack.groovy.Groovy.ratpack
-import static ratpack.jackson.Jackson.json
 import static ratpack.jackson.Jackson.jsonNode
 
 //String JSON_TYPE = 'application/json; charset=utf-8'
