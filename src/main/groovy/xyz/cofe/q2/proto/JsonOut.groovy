@@ -45,7 +45,7 @@ class JsonOut {
 
             out.writeFieldName("columns")
             out.writeStartArray()
-            for( Column col: ds.columns ){
+            for( Column col: ds.columnsInstance ){
                 out.writeObject(
                     [column:
                          [name: col.name
@@ -63,7 +63,7 @@ class JsonOut {
             out.writeStartArray()
             ds.fetch({ row ->
                 def kv = [:]
-                for( Column col : ds.columns ){
+                for( Column col : ds.columnsInstance ){
                     def key = col.name
                     def val = row[key]
                     kv[key] = val
