@@ -57,11 +57,7 @@ class JoinIteratorTest {
 
         def fooDs = RootData.instance.foo
         def barDs = RootData.instance.bar
-        def joinDs = fooDs.where {
-            it.id==1
-        } join( barDs ) {
-            barDs.where { bar -> bar.fooId == it.id }
-        }
+        def joinDs = fooDs.where { it.id==1 } join( barDs ) { foo, bar -> bar.fooId == foo.id }
 
         joinDs.each { v ->
             println "foo=${v.a?.name} <- bar=${v.b?.name}"

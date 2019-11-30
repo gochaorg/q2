@@ -7,6 +7,7 @@ import xyz.cofe.q2.model.Bar
 import xyz.cofe.q2.model.Foo
 
 import java.util.function.BiFunction
+import java.util.function.BiPredicate
 import java.util.function.Consumer
 import java.util.function.Function
 import java.util.function.Predicate
@@ -112,19 +113,21 @@ class DataSource<T> implements Iterable<T> {
     /**
      * Join соединение данных
      * @param ds набор данных из которого будет формироваться присоединяемая порция данных
-     * @param fetching функция которая извлекает из набора ds порцию данных, для каждого объекта исходного набора данных
+     * @param link функция которая связывает обеъект исходной выборки с объектами присоединенных данных
      * @return Набор хранящий пары значений из исходного и присоединенного источников данных
      */
-    public <U> DataSource<Pair<T,U>> join( DataSource<U> ds, Function<T, Iterable<U>> fetching ){
+    public <U> DataSource<Pair<T,U>> join( DataSource<U> ds, BiPredicate<T, U> link ){
         if( ds == null ) throw new IllegalArgumentException("ds==null");
-        if( fetching == null ) throw new IllegalArgumentException("fetching==null");
+        if( link == null ) throw new IllegalArgumentException("link == null");
         List<Column> columns = []
         columns.add(new Column(name: 'a', type: Object))
         columns.add(new Column(name: 'b', type: Object))
 
         def data = It.join(
             this,
-            fetching,
+            { T foo ->
+                ds.where( { bar -> link.test(foo,bar)} )
+            },
             { foo, bar -> new BasicPair( foo, bar) }
         )
 

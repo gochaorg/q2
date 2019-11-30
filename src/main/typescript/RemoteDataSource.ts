@@ -9,63 +9,6 @@ export interface Expr {
     compile():any
 }
 
-/** Запрос данных из источника */
-export class From implements Expr {
-    /** Имя источника данных */
-    readonly name:string
-
-    /** Конструктор
-     * @param name имя источника
-     */
-    constructor( name:string ){
-        this.name = name
-    }
-
-    /** Компиляция запроса для последующц отправки на сервер */
-    compile(){
-        return { type: 'From', name: this.name }
-    }
-
-    /** Создание запрос с фильтрацией данных
-     * @param jsArrowFnSource исходный код (js) стрелочной функции фильтра
-     */
-    where(jsArrowFnSource:string):Expr{
-        return new Where(this,jsArrowFnSource)
-    }
-}
-
-/** Запрос с фильтром */
-export class Where implements Expr {
-    /** Исходный запрос */
-    readonly ds:Expr
-
-    /** исходный код (js) стрелочной функции фильтра */
-    readonly jsArrowFnSource:string
-
-    /** Конструктор
-     * @param ds исходный набор данных
-     * @param jsArrowFnSource исходный код (js) стрелочной функции фильтра
-     */
-    constructor( ds:Expr, jsArrowFnSource:string ){
-        this.ds = ds
-        this.jsArrowFnSource = jsArrowFnSource
-    }
-
-    compile() {
-        return { 
-            type: 'Where', 
-            filter: {
-                code: this.jsArrowFnSource,
-                ast: {
-                    tree: esParser.parseScript( this.jsArrowFnSource ),
-                    parser: 'esprima'
-                }
-            },
-            dataSource: this.ds.compile()
-        }
-    }
-}
-
 /**
  * Интерфейс для создания запроса
  */
@@ -110,6 +53,35 @@ export abstract class RemoteDataSource<T> implements ExpressionBuilder, ApiCall,
     where( filter:(row:T)=>boolean ):RemoteDataSource<T> {
         return new WhereDataSource<T>( this, filter.toString() )
     }
+
+    join<E>( ds:RemoteDataSource<E>, link:(a:T, b:E)=>boolean ) : RemoteDataSource<{a:T,b:E}> {
+        return new JoinDataSource( this, ds, link.toString() )
+    }
+}
+
+/** Запрос данных из источника */
+export class From implements Expr {
+    /** Имя источника данных */
+    readonly name:string
+
+    /** Конструктор
+     * @param name имя источника
+     */
+    constructor( name:string ){
+        this.name = name
+    }
+
+    /** Компиляция запроса для последующц отправки на сервер */
+    compile(){
+        return { type: 'From', name: this.name }
+    }
+
+    /** Создание запрос с фильтрацией данных
+     * @param jsArrowFnSource исходный код (js) стрелочной функции фильтра
+     */
+    where(jsArrowFnSource:string):Expr{
+        return new Where(this,jsArrowFnSource)
+    }
 }
 
 /**
@@ -131,6 +103,38 @@ export class NamedRemoteDataSource<T> extends RemoteDataSource<T> implements Dat
     }
 }
 
+/** Запрос с фильтром */
+export class Where implements Expr {
+    /** Исходный запрос */
+    readonly ds:Expr
+
+    /** исходный код (js) стрелочной функции фильтра */
+    readonly jsArrowFnSource:string
+
+    /** Конструктор
+     * @param ds исходный набор данных
+     * @param jsArrowFnSource исходный код (js) стрелочной функции фильтра
+     */
+    constructor( ds:Expr, jsArrowFnSource:string ){
+        this.ds = ds
+        this.jsArrowFnSource = jsArrowFnSource
+    }
+
+    compile() {
+        return { 
+            type: 'Where', 
+            filter: {
+                code: this.jsArrowFnSource,
+                ast: {
+                    tree: esParser.parseScript( this.jsArrowFnSource ),
+                    parser: 'esprima'
+                }
+            },
+            dataSource: this.ds.compile()
+        }
+    }
+}
+
 /**
  * Фильтрация источника данных
  */
@@ -148,5 +152,64 @@ class WhereDataSource<T> extends RemoteDataSource<T> {
 
     get expression():Expr {
         return new Where(this.ds.expression, this.jsArrowFnSource)
+    }
+}
+
+/** Запрос соединения данных */
+export class Join implements Expr {
+    /** Исходный запрос */
+    readonly ds:Expr
+
+    /** Исходный запрос */
+    readonly joinData:Expr
+
+    /** исходный код (js) стрелочной функции соединения */
+    readonly jsArrowFnSource:string
+
+    constructor( ds:Expr, joinData:Expr, jsArrowFnSource:string ){
+        this.ds = ds
+        this.joinData = joinData
+        this.jsArrowFnSource = jsArrowFnSource
+    }
+
+    compile(){
+        return { 
+            type: 'Join', 
+            source: this.ds.compile(),
+            join: this.joinData.compile(),
+            filter: {
+                code: this.jsArrowFnSource,
+                ast: {
+                    tree: esParser.parseScript( this.jsArrowFnSource ),
+                    parser: 'esprima'
+                }
+            },
+        }
+    }
+}
+
+/**
+ * Фильтрация источника данных
+ */
+class JoinDataSource<T,E> extends RemoteDataSource<{a:T,b:E}> {
+    readonly api:string
+    readonly ds:RemoteDataSource<T>
+    readonly joinDs:RemoteDataSource<E>
+    readonly jsArrowFnSource:string
+
+    constructor( ds: RemoteDataSource<T>, joinDs: RemoteDataSource<E>, jsArrowFnSource:string ){
+        super()
+        this.ds = ds;
+        this.joinDs = joinDs;
+        this.api = ds.api;
+        this.jsArrowFnSource = jsArrowFnSource;
+    }
+
+    get expression():Expr {
+        return new Join(
+            this.ds.expression, 
+            this.joinDs.expression,
+            this.jsArrowFnSource
+        )
     }
 }

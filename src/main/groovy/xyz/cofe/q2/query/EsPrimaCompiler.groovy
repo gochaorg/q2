@@ -4,6 +4,13 @@ package xyz.cofe.q2.query
  * Компиляция ast дерева, парсер - esprima
  */
 class EsPrimaCompiler {
+    /**
+     * Компиляция esprima дерева ast выражения (BinaryExpression, MemberExpression)
+     * в аналогичное groovy
+     * @param out код groovy
+     * @param exp дерево ast
+     * @return успешность компиляции
+     */
     boolean compileExpression( Appendable out, Map exp ){
         if( out == null ) throw new IllegalArgumentException("out==null");
         if( exp == null ) throw new IllegalArgumentException("exp==null");
@@ -78,6 +85,13 @@ class EsPrimaCompiler {
         return false
     }
 
+    /**
+     * Компиляция esprima дерева ast выражения ArrowFunctionExpression
+     * в аналогичное groovy
+     * @param out код groovy
+     * @param arrowFn дерево ast
+     * @return успешность компиляции
+     */
     boolean compileArrowFn( Appendable out, Map arrowFn ){
         if( out == null ) throw new IllegalArgumentException("out==null");
         if( arrowFn == null ) throw new IllegalArgumentException("arrowFn==null");
@@ -114,6 +128,13 @@ class EsPrimaCompiler {
         return true
     }
 
+    /**
+     * Копиляция esprima дерева ast
+     * в аналогичное groovy
+     * @param out код groovy
+     * @param m дерево ast
+     * @return успешность компиляции
+     */
     boolean compile( Appendable out, Map m ){
         if( out == null ) throw new IllegalArgumentException("out==null");
         if( m == null ) throw new IllegalArgumentException("m==null");
@@ -134,6 +155,12 @@ class EsPrimaCompiler {
         return false
     }
 
+    /**
+     * Копиляция esprima дерева ast
+     * в функцию java/groovy
+     * @param esPrimaAst дерево ast
+     * @return функция
+     */
     Closure compileFilter( Map esPrimaAst ){
         if( esPrimaAst == null ) throw new IllegalArgumentException("esPrimaAst==null");
 
