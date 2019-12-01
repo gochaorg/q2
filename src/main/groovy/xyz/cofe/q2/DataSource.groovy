@@ -134,4 +134,18 @@ class DataSource<T> implements Iterable<T> {
         def resultDataset = new DataSource( columns, data )
         return resultDataset
     }
+
+    public DataSource select( Map mapping ){
+        if( mapping == null ) throw new IllegalArgumentException("mapping==null");
+        Map<String,Function> mapFn = [:]
+        mapping.each { k,f ->
+            if( k instanceof String ){
+                if( f instanceof Closure ){
+                    mapFn[k] = f as Function
+                }else if( f instanceof Function ){
+                    mapFn[k] = f
+                }
+            }
+        }
+    }
 }

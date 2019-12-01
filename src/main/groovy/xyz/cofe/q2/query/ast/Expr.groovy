@@ -1,4 +1,4 @@
-package xyz.cofe.q2.query
+package xyz.cofe.q2.query.ast
 
 import xyz.cofe.q2.DataSource
 

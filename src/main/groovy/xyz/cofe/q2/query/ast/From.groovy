@@ -1,11 +1,8 @@
-package xyz.cofe.q2.query
+package xyz.cofe.q2.query.ast
 
 import xyz.cofe.q2.DataSource
 import xyz.cofe.q2.meta.MetaData
-import xyz.cofe.q2.meta.Column
-
-import java.util.function.BiConsumer
-import java.util.function.Consumer
+import xyz.cofe.q2.query.PlanError
 
 /**
  * Выполнение чтения данных из источника

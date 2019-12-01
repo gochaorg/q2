@@ -1,11 +1,13 @@
 package xyz.cofe.q2.query
 
-import groovy.transform.TypeChecked
-import xyz.cofe.q2.DataSource
-import xyz.cofe.q2.meta.MetaData
-import xyz.cofe.q2.meta.Column
 
-import java.util.function.BiConsumer
+import xyz.cofe.q2.meta.MetaData
+import xyz.cofe.q2.query.ast.Expr
+import xyz.cofe.q2.query.ast.From
+import xyz.cofe.q2.query.ast.Join
+import xyz.cofe.q2.query.ast.Where
+
+import java.util.function.BiPredicate
 import java.util.function.Predicate
 
 /**
@@ -42,6 +44,25 @@ class PlanBuilder {
                 where.filter = clFilter as Predicate
             }
             return where
+        }
+
+        if( query.type=='Join' ){
+            if( query.source==null )throw new Error("undefined `source` of join operation")
+            if( query.join==null )throw new Error("undefined `join` of join opertation")
+
+            Expr sourceDatasource = build(query.source as Map)
+            Expr joinDatasource = build(query.join as Map)
+
+            Join joinOp = new Join()
+            joinOp.origin = sourceDatasource.compile()
+            joinOp.join = joinDatasource.compile()
+
+            if( query.filter?.ast?.tree && query.filter?.ast?.parser == 'esprima' ){
+                Closure clFilter = new EsPrimaCompiler().compileFilter(query.filter.ast.tree)
+                joinOp.filter = clFilter as BiPredicate
+            }
+
+            return joinOp
         }
 
         throw new Error("undefined query.type=$query.type")
