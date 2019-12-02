@@ -135,8 +135,26 @@ class DataSource<T> implements Iterable<T> {
         return resultDataset
     }
 
+    /**
+     * Преобразовывает входные данные в выходные
+     * @param mapping объект содержащий именнованые функции преобхования входных данных, в целевые.
+     * <br>
+     * Пример:
+     * <br><br>
+     *
+     * <code>
+     * foo.select(                          <br>
+     * &nbsp; id: &#x007b; Foo foo -> foo.id &#x007d;,         <br>
+     * &nbsp; id2: &#x007b; Foo  foo -> foo.id*2 &#x007d;      <br>
+     * ).each &#x007b; row ->                      <br>
+     * &nbsp;  println "id=$row.id id2=$row.id2"  <br>
+     * &#x007d;
+     * </code>
+     * @return вернет объекты типа Map, которые содержат результаты вычислений
+     */
     public DataSource select( Map mapping ){
         if( mapping == null ) throw new IllegalArgumentException("mapping==null");
+
         Map<String,Function> mapFn = [:]
         mapping.each { k,f ->
             if( k instanceof String ){
@@ -147,5 +165,16 @@ class DataSource<T> implements Iterable<T> {
                 }
             }
         }
+
+        Function mapper = { srcRow ->
+            def resRow = [:]
+            mapFn.each { String name, Function mapf ->
+                resRow[name] = mapf.apply(srcRow)
+            }
+            return resRow
+        } as Function
+
+        List<Column> columns = mapFn.keySet().collect { new Column(name: it, type: Object) }
+        return new DataSource( columns, It.map(this, mapper) )
     }
 }

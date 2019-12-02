@@ -53,4 +53,21 @@ class It {
             }
         ] as Iterable
     }
+
+    /**
+     * преобразование данных из одно типа данных в другой
+     * @param source исходные данные
+     * @param mapping функция преобразования
+     * @return итератор
+     */
+    public static <A,B> Iterable<B> map( Iterable<A> source, Function<A,B> mapping ){
+        if( mapping == null ) throw new IllegalArgumentException("mapping==null");
+        if( source == null ) throw new IllegalArgumentException("source==null");
+
+        return [
+            iterator: {
+                return new MapIterator( source.iterator(), mapping )
+            }
+        ] as Iterable
+    }
 }
