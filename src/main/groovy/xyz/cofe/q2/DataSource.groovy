@@ -138,7 +138,11 @@ class DataSource<T> implements Iterable<T> {
     /**
      * Преобразовывает входные данные в выходные
      * @param mapping объект содержащий именнованые функции преобхования входных данных, в целевые.
-     * <br>
+     * <br><br>
+     * В качестве ключей - String <br>
+     * В качестве значений - java.util.function.Function | Closure
+     *
+     * <br><br>
      * Пример:
      * <br><br>
      *

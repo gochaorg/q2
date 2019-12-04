@@ -57,6 +57,13 @@ export abstract class RemoteDataSource<T> implements ExpressionBuilder, ApiCall,
     join<E>( ds:RemoteDataSource<E>, link:(a:T, b:E)=>boolean ) : RemoteDataSource<{a:T,b:E}> {
         return new JoinDataSource( this, ds, link.toString() )
     }
+
+    select<Col,
+    Input extends { [name:string]:(row:T)=>Col },
+    Output extends {[K in keyof Input]:ReturnType<Input[K]>}
+    >( input:Input ):RemoteDataSource<Output> {
+        return new SelectDataSource( this, input )
+    }
 }
 
 /** Запрос данных из источника */
@@ -211,5 +218,71 @@ class JoinDataSource<T,E> extends RemoteDataSource<{a:T,b:E}> {
             this.joinDs.expression,
             this.jsArrowFnSource
         )
+    }
+}
+
+export class Select implements Expr {
+    readonly ds:Expr
+    readonly mapping:{
+        [name:string]:string
+    }
+
+    constructor( ds:Expr, mapping:{ [name:string]:string } ){
+        this.ds = ds
+        this.mapping = mapping
+    }
+
+    compile(){
+        const mapping : {[name:string]:{
+            code: string,
+            ast: {
+                tree: any,
+                parser: string
+            }
+        }} = {}
+
+        const keys = Object.keys(this.mapping)
+        keys.forEach( key=>{
+            mapping[key] = {
+                code: this.mapping[key],
+                ast: {
+                    tree: esParser.parseScript(this.mapping[key]),
+                    parser: 'esprima'
+                }
+            }
+        })
+
+        return {
+            type: 'Select',
+            source: this.ds.compile(),
+            mapping: mapping
+        }
+    }
+}
+
+class SelectDataSource<
+    T,
+    Col,
+    Input extends { [name:string]:(row:T)=>Col },
+    Output extends {[K in keyof Input]:ReturnType<Input[K]>}
+    > extends RemoteDataSource<Output> 
+{
+    readonly api:string
+    readonly mapping:Input
+    readonly ds:RemoteDataSource<T>
+
+    constructor( ds:RemoteDataSource<T>, input:Input ){
+        super()
+        this.api = ds.api
+        this.mapping = input
+        this.ds = ds
+    }
+
+    get expression():Expr {
+        const map : { [name:string] : string } = {}
+        Object.keys(this.mapping).forEach( key=> {
+            map[key] = this.mapping[key].toString()
+        })
+        return new Select(this.ds.expression, map)
     }
 }

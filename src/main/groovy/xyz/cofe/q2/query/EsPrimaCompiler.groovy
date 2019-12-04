@@ -161,7 +161,7 @@ class EsPrimaCompiler {
      * @param esPrimaAst дерево ast
      * @return функция
      */
-    Closure compileFilter( Map esPrimaAst ){
+    Closure compile( Map esPrimaAst ){
         if( esPrimaAst == null ) throw new IllegalArgumentException("esPrimaAst==null");
 
         StringWriter groovyCode = new StringWriter()

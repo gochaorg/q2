@@ -5,6 +5,9 @@ import xyz.cofe.q2.DataSource
 import java.util.function.BiPredicate
 import java.util.function.Predicate
 
+/**
+ * Операция присоединения части данных
+ */
 class Join implements Expr {
     /** Фильтр данных */
     BiPredicate filter

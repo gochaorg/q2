@@ -5,9 +5,11 @@ import xyz.cofe.q2.meta.MetaData
 import xyz.cofe.q2.query.ast.Expr
 import xyz.cofe.q2.query.ast.From
 import xyz.cofe.q2.query.ast.Join
+import xyz.cofe.q2.query.ast.Select
 import xyz.cofe.q2.query.ast.Where
 
 import java.util.function.BiPredicate
+import java.util.function.Function
 import java.util.function.Predicate
 
 /**
@@ -40,7 +42,7 @@ class PlanBuilder {
             Expr ds = build(query.dataSource as Map)
             Where where = new Where(origin: ds.compile())
             if( query.filter?.ast?.tree && query.filter?.ast?.parser == 'esprima' ){
-                Closure clFilter = new EsPrimaCompiler().compileFilter(query.filter.ast.tree)
+                Closure clFilter = new EsPrimaCompiler().compile(query.filter.ast.tree)
                 where.filter = clFilter as Predicate
             }
             return where
@@ -58,11 +60,38 @@ class PlanBuilder {
             joinOp.join = joinDatasource.compile()
 
             if( query.filter?.ast?.tree && query.filter?.ast?.parser == 'esprima' ){
-                Closure clFilter = new EsPrimaCompiler().compileFilter(query.filter.ast.tree)
+                Closure clFilter = new EsPrimaCompiler().compile(query.filter.ast.tree)
                 joinOp.filter = clFilter as BiPredicate
             }
 
             return joinOp
+        }
+
+        if( query.type=='Select' ){
+            if( query.source == null ) throw new Error("undefined `source` of Select operation")
+            if( query.mapping == null ) throw new Error("undefined `mapping` of Select opertation")
+
+            EsPrimaCompiler compiler = new EsPrimaCompiler()
+            Map<String, Function> mapping = [:]
+            query.mapping.each { key, mapDef ->
+                if( !(key instanceof String) )return
+                if( !(mapDef instanceof Map) )return
+
+                if( mapDef.ast?.tree && mapDef.ast?.parser == 'esprima' ){
+                    Closure mapCl = compiler.compile(mapDef.ast.tree)
+                    mapping[key] = mapCl as Function
+                }else{
+                    throw new Error("can't compute map fn for $key column")
+                }
+            }
+
+            Expr origin = build(query.source as Map)
+
+            Select selectOp = new Select()
+            selectOp.origin = origin.compile()
+            selectOp.mapping = mapping
+
+            return selectOp
         }
 
         throw new Error("undefined query.type=$query.type")
