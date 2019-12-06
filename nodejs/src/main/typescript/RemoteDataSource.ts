@@ -54,10 +54,19 @@ export abstract class RemoteDataSource<T> implements ExpressionBuilder, ApiCall,
         return new WhereDataSource<T>( this, filter.toString() )
     }
 
+    /**
+     * Создание join соединения (по аналогии с sql)
+     * @param ds источник данных который будет присоединен
+     * @param link условие соединения
+     */
     join<E>( ds:RemoteDataSource<E>, link:(a:T, b:E)=>boolean ) : RemoteDataSource<{a:T,b:E}> {
         return new JoinDataSource( this, ds, link.toString() )
     }
 
+    /**
+     * Выборка колонок (по аналогии sql), т.е. аналогичная операция map - преобразование данных строки в нужные величины
+     * @param input входные данные
+     */
     select<Col,
     Input extends { [name:string]:(row:T)=>Col },
     Output extends {[K in keyof Input]:ReturnType<Input[K]>}
@@ -95,9 +104,17 @@ export class From implements Expr {
  * Описывает манипуляции с однотипным источником данных
  */
 export class NamedRemoteDataSource<T> extends RemoteDataSource<T> implements DataSource<T> {
+    /** расположение api */
     readonly api:string
-    readonly name:string    
 
+    /** имя источника данных */
+    readonly name:string
+
+    /**
+     * Конструктор
+     * @param api расположение api
+     * @param name имя источника данных
+     */
     constructor(api:string,name:string){
         super()
         this.api = api
@@ -127,6 +144,7 @@ export class Where implements Expr {
         this.jsArrowFnSource = jsArrowFnSource
     }
 
+    /** Создание запроса */
     compile() {
         return { 
             type: 'Where', 
@@ -146,6 +164,7 @@ export class Where implements Expr {
  * Фильтрация источника данных
  */
 class WhereDataSource<T> extends RemoteDataSource<T> {
+    /** расположение api */
     readonly api:string
     readonly ds:RemoteDataSource<T>
     readonly jsArrowFnSource:string
@@ -157,6 +176,7 @@ class WhereDataSource<T> extends RemoteDataSource<T> {
         this.jsArrowFnSource = jsArrowFnSource;
     }
 
+    /** Создание запроса */
     get expression():Expr {
         return new Where(this.ds.expression, this.jsArrowFnSource)
     }
@@ -179,6 +199,7 @@ export class Join implements Expr {
         this.jsArrowFnSource = jsArrowFnSource
     }
 
+    /** Создание запроса */
     compile(){
         return { 
             type: 'Join', 
@@ -199,6 +220,7 @@ export class Join implements Expr {
  * Фильтрация источника данных
  */
 class JoinDataSource<T,E> extends RemoteDataSource<{a:T,b:E}> {
+    /** расположение api */
     readonly api:string
     readonly ds:RemoteDataSource<T>
     readonly joinDs:RemoteDataSource<E>
@@ -221,6 +243,9 @@ class JoinDataSource<T,E> extends RemoteDataSource<{a:T,b:E}> {
     }
 }
 
+/**
+ * Выражение преобразования из исходного формата в целевой
+ */
 export class Select implements Expr {
     readonly ds:Expr
     readonly mapping:{
@@ -260,6 +285,9 @@ export class Select implements Expr {
     }
 }
 
+/**
+ * Преобразование данных из исходного формата в целевой
+ */
 class SelectDataSource<
     T,
     Col,
@@ -267,10 +295,20 @@ class SelectDataSource<
     Output extends {[K in keyof Input]:ReturnType<Input[K]>}
     > extends RemoteDataSource<Output> 
 {
+    /** расположение api */
     readonly api:string
+
+    /** правила преобразования входных данных */
     readonly mapping:Input
+
+    /** истоник данных */
     readonly ds:RemoteDataSource<T>
 
+    /**
+     * Конструктор
+     * @param ds истоничк данных
+     * @param input правила преобразования входных данных
+     */
     constructor( ds:RemoteDataSource<T>, input:Input ){
         super()
         this.api = ds.api
@@ -278,6 +316,7 @@ class SelectDataSource<
         this.ds = ds
     }
 
+    /** Создание запроса */
     get expression():Expr {
         const map : { [name:string] : string } = {}
         Object.keys(this.mapping).forEach( key=> {

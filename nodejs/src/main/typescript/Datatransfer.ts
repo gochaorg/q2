@@ -2,20 +2,38 @@ import ax from "axios"
 import { Foo } from './model'
 import * as parser from "esprima"
 
+/**
+ * Здесь определяем ответ который содержит табличные данные
+ */
 export interface Dataset {
+    // Мета информация о таблице
     meta: {
+        // Информация о колонках
         columns: {
+            // информация о конкретной колонке
             column: {
+                // Имя колоноки
                 name: string
+
+                // В теории здесь должен быть тип данных, но пока его нет :(
                 type: string
             }
         }[]
     }
+
+    // данные таблицы
     data: {
+        // содержит массив из ключей/данные
         [name: string]:any
     }[]
 }
 
+/**
+ * Выполнение запроса к api для получения таблицчных данных
+ * @param url адрес api
+ * @param data json запрос
+ * @param consumer получатель запроса
+ */
 export async function fetchData<T>( 
     url:string, 
     data:any,
@@ -31,14 +49,7 @@ export async function fetchData<T>(
     }).then( (res)=>{
         if( res.status>=200 && res.status<300 ){
             const ds = res.data as Dataset
-            let resultSet : T[] = []
-
-            //console.log( '//fetchData() accepted data' )
-            //console.log( `//fetchData() meta.columns:`, ds.meta.columns.map(x=>x.column) )
-            
-            resultSet = ds.data as T[]
-
-            //console.log( '//fetchData() send to consumer' )
+            let resultSet : T[] = ds.data as T[]
             consumer.ok( resultSet )
         }else{
             console.error('bad status',res.status,' result=',res)
