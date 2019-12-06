@@ -14,17 +14,6 @@ class JsonOut {
     /** Переименование типов */
     final Map<String,String> typeMap = ['java.lang.String':'string']
 
-//    /** Запись данных в http ответ */
-//    public <T> void write( Response output, DataSource<T> ds ){
-//        if( output == null ) throw new IllegalArgumentException("output==null");
-//        if( ds == null ) throw new IllegalArgumentException("ds==null");
-//
-//        StringWriter sw = new StringWriter()
-//        write(sw,ds)
-//
-//        output.send('application/json', sw.toString() )
-//    }
-
     /**
      * Запись данных в writer
      * @param output куда записывать json данные

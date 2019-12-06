@@ -1,14 +1,13 @@
-package xyz.cofe.q2.jetty
+package xyz.cofe.q2.jetty.api
 
-import org.eclipse.jetty.server.Request
+
 import org.eclipse.jetty.server.Server
-import org.eclipse.jetty.server.handler.AbstractHandler
+import xyz.cofe.q2.jetty.CmdLine
+import xyz.cofe.q2.jetty.HttpLog
+import xyz.cofe.q2.jetty.JUL
+import xyz.cofe.q2.jetty.ServerConf
 import xyz.cofe.q2.jetty.env.SysProps
 import xyz.cofe.q2.jetty.hello.HelloMod
-
-import javax.servlet.ServletException
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 /**
  * Запуск вебсервера
@@ -44,7 +43,7 @@ class Startup {
     /**
      * Номер порта, по умолчанию 19500
      */
-    @Lazy int port = { (cmdLine.port ?: 19500) as int }()
+    @Lazy int port = { (cmdLine.port ?: SysProps.instance.defaultPort) as int }()
 
     /**
      * Запуск в режиме отладки
@@ -59,6 +58,7 @@ class Startup {
         ServerConf.configure( new Server(port) ){
             include(new HttpLog())
             include HelloMod
+            include ApiMod
         }
     }()
 }

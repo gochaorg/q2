@@ -179,8 +179,8 @@ class ServerConf {
         if( addr == null ) throw new IllegalArgumentException("addr==null");
         if( fn == null ) throw new IllegalArgumentException("fn==null");
         return request( { JettyReq jreq ->
-            if( !jreq.addr == addr )return false
-            if( !jreq.request?.method?.equalsIgnoreCase('get') )return false
+            if( !(jreq.addr == addr) )return false
+            if( !(jreq.request?.method?.equalsIgnoreCase('get')) )return false
             return true
         }, fn )
     }
@@ -195,8 +195,8 @@ class ServerConf {
         if( addr == null ) throw new IllegalArgumentException("addr==null");
         if( fn == null ) throw new IllegalArgumentException("fn==null");
         return request( { JettyReq jreq ->
-            if( !jreq.addr == addr )return false
-            if( !jreq.request?.method?.equalsIgnoreCase('post') )return false
+            if( !(jreq.addr == addr) )return false
+            if( !(jreq.request?.method?.equalsIgnoreCase('post')) )return false
             return true
         }, fn )
     }
