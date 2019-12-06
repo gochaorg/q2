@@ -35,9 +35,9 @@ export abstract class RemoteDataSource<T> implements ExpressionBuilder, ApiCall,
      * Прямое извлечение данных
      * @param consumer получатель данных
      */
-    fetch( consumer:(row:T)=>any ){
+    async fetch( consumer:(row:T)=>any ){
         const payLoad = this.expression.compile()
-        fetchData<T>( this.api, payLoad, 
+        await fetchData<T>( this.api, payLoad,
             {
                 ok: rows=>{
                     rows.forEach( row=>consumer(row) )

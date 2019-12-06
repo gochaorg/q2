@@ -23,7 +23,7 @@ export async function fetchData<T>(
         ok:(dataset:T[])=>any
     }
 ){
-    ax.post( url, JSON.stringify(data), {
+    await ax.post( url, JSON.stringify(data), {
         headers: {
             'accept': 'application/json',
             'content-type': 'application/json'
@@ -33,12 +33,12 @@ export async function fetchData<T>(
             const ds = res.data as Dataset
             let resultSet : T[] = []
 
-            console.log( '//fetchData() accepted data' )
-            console.log( `//fetchData() meta.columns:`, ds.meta.columns.map(x=>x.column) )
+            //console.log( '//fetchData() accepted data' )
+            //console.log( `//fetchData() meta.columns:`, ds.meta.columns.map(x=>x.column) )
             
             resultSet = ds.data as T[]
 
-            console.log( '//fetchData() send to consumer' )
+            //console.log( '//fetchData() send to consumer' )
             consumer.ok( resultSet )
         }else{
             console.error('bad status',res.status,' result=',res)
@@ -47,13 +47,3 @@ export async function fetchData<T>(
         console.error( "error: ",err )
     })
 }
-
-// const filter1 = ( r:Foo ) => r.id == 1;
-// const payLoad = {filter: parser.parseScript(filter1.toString()) }
-// fetchData( 'http://localhost:19500/t2/g', payLoad, 
-//     { 
-//         ok:(data:Foo[])=>{
-//             console.log('data:',data)
-//         }
-//     }
-// )
