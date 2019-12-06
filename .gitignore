@@ -10,3 +10,5 @@ build
 .settings
 bin
 .vscode
+q2-base/target
+q2-jetty/target

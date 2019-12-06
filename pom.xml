@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>xyz.cofe</groupId>
+    <artifactId>q2</artifactId>
+    <version>0.1-SNAPSHOT</version>
+
+    <packaging>pom</packaging>
+
+    <properties>
+        <groovy.grp>org.codehaus.groovy</groovy.grp>
+<!--        <groovy.art>groovy-all</groovy.art>-->
+<!--        <groovy.ver>[2.5.8],[3.0.0-rc-1]</groovy.ver>-->
+        <groovy.art>groovy</groovy.art>
+        <groovy.ver>[3.0.0-rc-1]</groovy.ver>
+        <groovy.type>pom</groovy.type>
+
+        <junit.ver>4.12</junit.ver>
+
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+
+    <modules>
+         <module>q2-base</module>
+         <module>q2-jetty</module>
+        <module>nodejs</module>
+    </modules>
+</project>
