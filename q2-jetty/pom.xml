@@ -33,6 +33,12 @@
             <version>${groovy.ver}</version>
         </dependency>
 
+        <dependency>
+            <groupId>${groovy.grp}</groupId>
+            <artifactId>groovy-templates</artifactId>
+            <version>${groovy.ver}</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-server -->
         <dependency>
             <groupId>org.eclipse.jetty</groupId>

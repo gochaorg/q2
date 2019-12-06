@@ -4,6 +4,7 @@ import org.eclipse.jetty.server.Request
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.handler.AbstractHandler
 import xyz.cofe.q2.jetty.env.SysProps
+import xyz.cofe.q2.jetty.hello.HelloMod
 
 import javax.servlet.ServletException
 import javax.servlet.http.HttpServletRequest
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletResponse
  * Запуск вебсервера
  */
 class Startup {
+    //region command line startup
     /**
      * Входная точка
      * @param args аргументы сервера
@@ -26,6 +28,7 @@ class Startup {
      * @param args аргументы командной строки
      */
     void start(String[] args){
+        JUL.singleLineSimpleFormat()
         cmdLine = new CmdLine(args)
         if( debug ){
             System.setProperty(SysProps.instance.debug.name,'true')
@@ -47,24 +50,15 @@ class Startup {
      * Запуск в режиме отладки
      */
     @Lazy boolean debug = { (cmdLine.debug ?: false) as boolean }()
+    //endregion
 
     /**
-     * Http сервер
+     * Http сервер и его конфигурация
      */
     @Lazy Server server = {
         ServerConf.configure( new Server(port) ){
-            context('/p') {
-                get( '/' ) { HttpRequest req, HttpResponse res ->
-                    res.html {
-                        body {
-                            h1('Hello/Привет!')
-                        }
-                    }
-                }
-            }
-            get '/', { HttpRequest req, HttpResponse res ->
-                res.writer.println "Ok, i'am fine"
-            }
+            include(new HttpLog())
+            include HelloMod
         }
     }()
 }

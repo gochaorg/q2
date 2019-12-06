@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 /**
- * Объект для фильтрации http/jetty запроса
+ * Объект для фильтрации http/jetty запроса - см {@link ServerConf#request(java.util.function.Predicate, groovy.lang.Closure)}
  */
 class JettyReq {
     /**
