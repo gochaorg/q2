@@ -38,10 +38,33 @@ fooDatasource
 
 Данный пример это не вымешленный код, а реально работающий прототип. 
 
+По скольку задействованы возможности typescript, то появляются следующие возможности
+
+* typescript минимизирует ошибки и выводит типы данных
+* современные редакторы idea/vs code при наборе исходно кода автоматически добавляют подсказки
+
+![intelli-sience](idea-popup.png)
+
 Данный прототип работает благодоря двум опциям:
 
 1. Для любой функции javascript/typescript, включая стрелочные функции возможно получить их исходный код: `arrowFn.toString()`
 2. Для nodejs и для java есть уже готовые парсеры исходного кода, [esprima](https://www.npmjs.com/package/esprima) и [jdk9+](https://docs.oracle.com/en/java/javase/11/docs/api/jdk.scripting.nashorn/jdk/nashorn/api/tree/package-summary.html) соответственно.
+
+Рассмотрим более детально что происходит на стороне клиента (nodejs) и сервера (rest) 
+
+На стороне клиента
+------------------
+
+На стороне клиента есть следующие сущности:
+
+* Модель данных - файл [model.ts](https://github.com/gochaorg/q2/blob/876db7f2c253946e6d6f8eb98a0fa36a2e565789/nodejs/src/main/typescript/model.ts)
+* Http клиент который реализует работу с сетевыми источниками данных - файл [RemoteDataSource.ts](https://github.com/gochaorg/q2/blob/876db7f2c253946e6d6f8eb98a0fa36a2e565789/nodejs/src/main/typescript/RemoteDataSource.ts)
+    * Клиент задействет библиотеку axios для обмена данными по http
+    * И библиотеку esprima для парсинга стрелочных функций
+* Скрипт для тестирования - файл [linq1.ts](https://github.com/gochaorg/q2/blob/876db7f2c253946e6d6f8eb98a0fa36a2e565789/nodejs/src/main/typescript/linq1.ts)
+
+На стороне сервера
+------------------
 
 Сборка и демонстрация проекта
 =============================
@@ -68,7 +91,7 @@ commit [876db7f2c253946e6d6f8eb98a0fa36a2e565789](https://github.com/gochaorg/q2
 * **nodejs** версии 10+
 * **jdk** версии 8+ 
 * **maven** версии 3+
-* **git** подойдет любая которая сможет git-clone
+* **git** подойдет любая версия, которая сможет выполнить комманду git-clone
 
 Для установки указанных пакетов выполните команду в терминале
 
