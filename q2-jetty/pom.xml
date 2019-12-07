@@ -56,6 +56,7 @@
 
     <build>
         <plugins>
+            <!-- Тестирование -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -69,6 +70,7 @@
                 </dependencies>
             </plugin>
 
+            <!-- Сборка исходников groovy -->
             <plugin>
                 <groupId>org.codehaus.gmavenplus</groupId>
                 <artifactId>gmavenplus-plugin</artifactId>
@@ -94,6 +96,32 @@
                         <!--                        <type>${groovy.type}</type>-->
                     </dependency>
                 </dependencies>
+            </plugin>
+
+            <!-- Сборка исполняемых скриптов -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>appassembler-maven-plugin</artifactId>
+                <version>1.10</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>assemble</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <programs>
+                        <program>
+                            <mainClass>xyz.cofe.q2.jetty.api.Startup</mainClass>
+                            <id>q2-demo-run</id>
+                        </program>
+                    </programs>
+                    <repositoryLayout>flat</repositoryLayout>
+                    <useWildcardClassPath>true</useWildcardClassPath>
+                    <repositoryName>jars</repositoryName>
+                </configuration>
             </plugin>
         </plugins>
     </build>
