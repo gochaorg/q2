@@ -1,15 +1,10 @@
 import { fetchData } from "./Datatransfer"
 import * as esParser from "esprima"
 
-/** Интерфейс для вызова api */
-export interface ApiCall {
-    api: string
-}
-
 /**
  * Удаленный(внешний) источник данных
  */
-export abstract class RemoteDataSource<T> implements ApiCall {
+export abstract class RemoteDataSource<T> {
     /** Создание запроса */
     abstract get expression() :any
 
