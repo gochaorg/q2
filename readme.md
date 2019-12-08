@@ -41,7 +41,7 @@ fooDatasource
 По скольку задействованы возможности typescript, то появляются следующие возможности
 
 * typescript минимизирует ошибки и выводит типы данных
-* современные редакторы idea/vs code при наборе исходно кода автоматически добавляют подсказки
+* современные редакторы idea/vs code при наборе исходного кода автоматически добавляют подсказки
 
 ![intelli-sience](idea-popup.png)
 
@@ -63,8 +63,148 @@ fooDatasource
     * И библиотеку esprima для парсинга стрелочных функций
 * Скрипт для тестирования - файл [linq1.ts](https://github.com/gochaorg/q2/blob/876db7f2c253946e6d6f8eb98a0fa36a2e565789/nodejs/src/main/typescript/linq1.ts)
 
+### Модель данных
+
+Модель данных - это набор интерфейсов которые определяет программист для решения прикладной задачи, в данном примере она выглядит следующим образом:
+
+    export interface Foo {
+        id : number
+        name : string    
+    }
+    
+    export interface Bar {
+        id : number
+        name : string
+        fooId : number
+    }
+
+В теории эту модель данных можно автоматически сгенерировать из классов/таблиц СУБД.
+
+Данная модель [присуствует в REST сервисе](https://github.com/gochaorg/q2/tree/876db7f2c253946e6d6f8eb98a0fa36a2e565789/q2-base/src/main/groovy/xyz/cofe/q2/model)
+
+Пример
+
+    package xyz.cofe.q2.model
+    
+    /** Тестовая сущьность */
+    class Bar {
+        /** Конструктор по умолчанию */
+        Bar(){}
+    
+        /**
+         * Конструктор
+         * @param id Идентификатор
+         * @param name Имя
+         * @param fooId Ссылка на foo
+         */
+        Bar(int id, String name, int fooId){
+            this.id = id
+            this.name = name
+            this.fooId = fooId
+        }
+    
+        /** Идентификатор */
+        int id
+    
+        /** Имя */
+        String name
+    
+        /** Ссылка на foo */
+        int fooId
+    }
+    
+В REST сервисе такие модели собираются [один набор](https://github.com/gochaorg/q2/blob/876db7f2c253946e6d6f8eb98a0fa36a2e565789/q2-base/src/main/groovy/xyz/cofe/q2/RootData.groovy)
+
+    class RootData {
+        final List<Foo> fooData = [   new Foo(1,"fooA"),
+                                      new Foo(2,"fooB"),
+                                      new Foo(3,"fooC")
+        ]
+    
+        final DataSource<Foo> foo = new DataSource<>( Foo, fooData )
+    
+        final DataSource<Bar> bar = new DataSource<>(
+            Bar,
+            [
+                new Bar( 3,"barA",1), new Bar( 4,"barB",1),
+                new Bar( 5,"barC",2), new Bar( 6,"barD",2),
+                new Bar( 7,"barE",1), new Bar( 8,"barF",5),
+                new Bar( 9,"barG",1), new Bar(10,"barH",5),
+                new Bar(11,"barI",2), new Bar(12,"barJ",3),
+            ]
+        )
+    
+        final MetaData meta = new MetaData(this)
+    }
+
+### Подключение модели данных на клиенте
+
+На клиенте данные модели подключаются следующим образом
+
+    const foo = new NamedRemoteDataSource<Foo>( 'http://localhost:19500/api', 'foo' )
+    const bar = new NamedRemoteDataSource<Bar>( 'http://localhost:19500/api', 'bar' )
+
+### Построение запроса к данным
+
+Теперь сам запрос строиться так
+
+    foo.where(row => row.id == 1).fetch(row => console.log(row))
+    
+При построении запроса не выполняются действия на клиенте, создаеться объект который описывает данный запрос, ниже его пример (в примере частично отображена структура)
+
+    {
+        "type": "Where",
+        "dataSource": {    
+            "type": "From",
+            "name": "foo"
+        },
+        "filter": {
+            "code": "(row) => row.id == 1",
+            "ast": {
+                "tree": {
+                    "type": "Program",
+                    "body": [{
+                        "type": "ExpressionStatement",
+                        "expression": {
+                            "type": "ArrowFunctionExpression",
+                            "id": null,
+                            "params": [{
+                                "type": "Identifier",
+                                "name": "row"
+                            }],
+                            "body": {
+                                "type": "BinaryExpression",
+                                "operator": "==",
+                                "left": {
+                                    ...
+                                },
+                                "right": {
+                                    ...
+                                }
+                            },
+                        }
+                    }],
+                },
+                "parser": "esprima"
+            }
+        }
+    }
+
+Последней инструкцией в этой цепоче методов должен быть вызов `fetch(...)`. Метод `fetch` отправляет POST запрос на REST сервис, в теле которого передается созданный объект, соответ запросу.
+
+REST сервис обрабатывает запрос и возвращает их в виде табличных данных.
+
 На стороне сервера
 ------------------
+
+На стороне сервера присуствуют следующие части:
+
+* Модель данных
+    * [RootData](https://github.com/gochaorg/q2/blob/876db7f2c253946e6d6f8eb98a0fa36a2e565789/q2-base/src/main/groovy/xyz/cofe/q2/RootData.groovy) - корневой объект, который описывает все доступные классы/таблицы данных
+* Источник данных [DataSource](https://github.com/gochaorg/q2/blob/876db7f2c253946e6d6f8eb98a0fa36a2e565789/q2-base/src/main/groovy/xyz/cofe/q2/DataSource.groovy) - класс для манипулирования данными (фильтрация/join/map и т.д...)
+* [PlanBuilder](https://github.com/gochaorg/q2/blob/876db7f2c253946e6d6f8eb98a0fa36a2e565789/q2-base/src/main/groovy/xyz/cofe/q2/query/PlanBuilder.groovy) - по входным данным (json) строит соответствующий источник данных
+* [EsPrimaCompiler](https://github.com/gochaorg/q2/blob/876db7f2c253946e6d6f8eb98a0fa36a2e565789/q2-base/src/main/groovy/xyz/cofe/q2/query/EsPrimaCompiler.groovy) - компилирует ast дерево переданное в запросе (в примере выше - это поле `"filter"` в json), в функцию на языке java/groovy.
+* [ApiMod](https://github.com/gochaorg/q2/blob/876db7f2c253946e6d6f8eb98a0fa36a2e565789/q2-jetty/src/main/groovy/xyz/cofe/q2/jetty/api/ApiMod.groovy) - непосредственно принимает POST запрос и преобразует его в табличную форму, благодоря выше приведенным классам.
 
 Сборка и демонстрация проекта
 =============================
