@@ -12,7 +12,7 @@ class DSTest1 {
     @Test
     void fetch(){
         println "=== Пример простой выборки ==="
-        root.foo.fetch( { row ->
+        root.foo.pick( { row ->
             println "id=$row.id name=$row.name"
         } )
     }
@@ -23,7 +23,7 @@ class DSTest1 {
         def ds = root.foo.where( row -> row.id==1 )
 
         int c1 = 0
-        ds.fetch( { row ->
+        ds.pick( { row ->
             c1++
             println "id=$row.id name=$row.name"
         })
@@ -33,7 +33,7 @@ class DSTest1 {
         root.fooData.add( new Foo(id:1, name:"addB") )
 
         int c2 = 0
-        ds.fetch( { row ->
+        ds.pick( { row ->
             c2++
             println "id=$row.id name=$row.name"
         })

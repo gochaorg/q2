@@ -51,7 +51,7 @@ class JsonOut {
         def writeData = {
             out.writeFieldName("data")
             out.writeStartArray()
-            ds.fetch({ row ->
+            ds.pick({ row ->
                 def kv = [:]
                 for( Column col : ds.columnsInstance ){
                     def key = col.name

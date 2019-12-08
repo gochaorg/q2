@@ -72,7 +72,7 @@ class DataSource<T> implements Iterable<T> {
      * Извлечение данных
      * @param dataConsumer функция принимающая данные их набора/источника
      */
-    void fetch( Consumer<T> dataConsumer ){
+    void pick(Consumer<T> dataConsumer ){
         if( dataConsumer==null )throw new IllegalArgumentException("dataConsumer == null")
         valuesInstance.each { dataConsumer.accept(it) }
     }
