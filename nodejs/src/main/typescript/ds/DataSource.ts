@@ -7,5 +7,5 @@ export interface DataSource<T> {
      * Извлечение данных из источника
      * @param consumer получатель данных
      */
-    fetch( consumer:(row:T)=>any ):any
+    pick(consumer:(row:T)=>any ):any
 }

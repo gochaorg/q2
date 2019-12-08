@@ -3,19 +3,6 @@ import { DataSource } from './DataSource';
 import { fetchData } from "./Datatransfer"
 import * as esParser from "esprima"
 
-/** Некий обощенный запрос к api */
-export interface Expr {
-    /** Компиляция запроса для последующц отправки на сервер */
-    compile():any
-}
-
-/**
- * Интерфейс для создания запроса
- */
-export interface ExpressionBuilder {
-    expression: Expr
-}
-
 /** Интерфейс для вызова api */
 export interface ApiCall {
     api: string
@@ -24,19 +11,19 @@ export interface ApiCall {
 /**
  * Удаленный(внешний) источник данных
  */
-export abstract class RemoteDataSource<T> implements ExpressionBuilder, ApiCall, DataSource<T> {
+export abstract class RemoteDataSource<T> implements ApiCall, DataSource<T> {
     /** Создание запроса */
-    abstract get expression():Expr
+    abstract get expression() :any
 
     /** адрес */
-    abstract get api(): string
+    abstract get api() :string
 
     /**
      * Прямое извлечение данных
      * @param consumer получатель данных
      */
-    async fetch( consumer:(row:T)=>any ){
-        const payLoad = this.expression.compile()
+    async pick(consumer:(row:T)=>any ){
+        const payLoad = this.expression
         await fetchData<T>( this.api, payLoad,
             {
                 ok: rows=>{
@@ -75,31 +62,6 @@ export abstract class RemoteDataSource<T> implements ExpressionBuilder, ApiCall,
     }
 }
 
-/** Запрос данных из источника */
-export class From implements Expr {
-    /** Имя источника данных */
-    readonly name:string
-
-    /** Конструктор
-     * @param name имя источника
-     */
-    constructor( name:string ){
-        this.name = name
-    }
-
-    /** Компиляция запроса для последующц отправки на сервер */
-    compile(){
-        return { type: 'From', name: this.name }
-    }
-
-    /** Создание запрос с фильтрацией данных
-     * @param jsArrowFnSource исходный код (js) стрелочной функции фильтра
-     */
-    where(jsArrowFnSource:string):Expr{
-        return new Where(this,jsArrowFnSource)
-    }
-}
-
 /**
  * Описывает манипуляции с однотипным источником данных
  */
@@ -122,41 +84,8 @@ export class NamedRemoteDataSource<T> extends RemoteDataSource<T> implements Dat
     }
 
     /** Создание запроса */
-    get expression():Expr {
-        return new From(this.name)
-    }
-}
-
-/** Запрос с фильтром */
-export class Where implements Expr {
-    /** Исходный запрос */
-    readonly ds:Expr
-
-    /** исходный код (js) стрелочной функции фильтра */
-    readonly jsArrowFnSource:string
-
-    /** Конструктор
-     * @param ds исходный набор данных
-     * @param jsArrowFnSource исходный код (js) стрелочной функции фильтра
-     */
-    constructor( ds:Expr, jsArrowFnSource:string ){
-        this.ds = ds
-        this.jsArrowFnSource = jsArrowFnSource
-    }
-
-    /** Создание запроса */
-    compile() {
-        return { 
-            type: 'Where', 
-            filter: {
-                code: this.jsArrowFnSource,
-                ast: {
-                    tree: esParser.parseScript( this.jsArrowFnSource ),
-                    parser: 'esprima'
-                }
-            },
-            dataSource: this.ds.compile()
-        }
+    get expression() {
+        return { type: 'From', name: this.name };
     }
 }
 
@@ -177,34 +106,9 @@ class WhereDataSource<T> extends RemoteDataSource<T> {
     }
 
     /** Создание запроса */
-    get expression():Expr {
-        return new Where(this.ds.expression, this.jsArrowFnSource)
-    }
-}
-
-/** Запрос соединения данных */
-export class Join implements Expr {
-    /** Исходный запрос */
-    readonly ds:Expr
-
-    /** Исходный запрос */
-    readonly joinData:Expr
-
-    /** исходный код (js) стрелочной функции соединения */
-    readonly jsArrowFnSource:string
-
-    constructor( ds:Expr, joinData:Expr, jsArrowFnSource:string ){
-        this.ds = ds
-        this.joinData = joinData
-        this.jsArrowFnSource = jsArrowFnSource
-    }
-
-    /** Создание запроса */
-    compile(){
-        return { 
-            type: 'Join', 
-            source: this.ds.compile(),
-            join: this.joinData.compile(),
+    get expression() {
+        return {
+            type: 'Where',
             filter: {
                 code: this.jsArrowFnSource,
                 ast: {
@@ -212,6 +116,7 @@ export class Join implements Expr {
                     parser: 'esprima'
                 }
             },
+            dataSource: this.ds.expression
         }
     }
 }
@@ -234,53 +139,19 @@ class JoinDataSource<T,E> extends RemoteDataSource<{a:T,b:E}> {
         this.jsArrowFnSource = jsArrowFnSource;
     }
 
-    get expression():Expr {
-        return new Join(
-            this.ds.expression, 
-            this.joinDs.expression,
-            this.jsArrowFnSource
-        )
-    }
-}
-
-/**
- * Выражение преобразования из исходного формата в целевой
- */
-export class Select implements Expr {
-    readonly ds:Expr
-    readonly mapping:{
-        [name:string]:string
-    }
-
-    constructor( ds:Expr, mapping:{ [name:string]:string } ){
-        this.ds = ds
-        this.mapping = mapping
-    }
-
-    compile(){
-        const mapping : {[name:string]:{
-            code: string,
-            ast: {
-                tree: any,
-                parser: string
-            }
-        }} = {}
-
-        const keys = Object.keys(this.mapping)
-        keys.forEach( key=>{
-            mapping[key] = {
-                code: this.mapping[key],
+    /** Создание запроса */
+    get expression() {
+        return {
+            type: 'Join',
+            source: this.ds.expression,
+            join: this.joinDs.expression,
+            filter: {
+                code: this.jsArrowFnSource,
                 ast: {
-                    tree: esParser.parseScript(this.mapping[key]),
+                    tree: esParser.parseScript( this.jsArrowFnSource ),
                     parser: 'esprima'
                 }
             }
-        })
-
-        return {
-            type: 'Select',
-            source: this.ds.compile(),
-            mapping: mapping
         }
     }
 }
@@ -317,11 +188,36 @@ class SelectDataSource<
     }
 
     /** Создание запроса */
-    get expression():Expr {
+    get expression() {
+        //todo переписать
         const map : { [name:string] : string } = {}
         Object.keys(this.mapping).forEach( key=> {
             map[key] = this.mapping[key].toString()
         })
-        return new Select(this.ds.expression, map)
+
+        const mapping : {[name:string]:{
+                code: string,
+                ast: {
+                    tree: any,
+                    parser: string
+                }
+            }} = {}
+
+        const keys = Object.keys(map)
+        keys.forEach( key=>{
+            mapping[key] = {
+                code: map[key],
+                ast: {
+                    tree: esParser.parseScript(map[key]),
+                    parser: 'esprima'
+                }
+            }
+        })
+
+        return {
+            type: 'Select',
+            source: this.ds.expression,
+            mapping: mapping
+        }
     }
 }

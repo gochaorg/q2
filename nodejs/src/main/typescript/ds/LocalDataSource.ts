@@ -13,7 +13,7 @@ export class LocalDataSource<T> implements DataSource<T> {
      * Прямое извлечение данных
      * @param consumer получатель данных
      */
-    fetch( consumer:(row:T)=>any ){
+    pick(consumer:(row:T)=>any ){
         if(consumer){
             for( let i=0; i<this.values.length;i++ ){
                 consumer(this.values[i])
