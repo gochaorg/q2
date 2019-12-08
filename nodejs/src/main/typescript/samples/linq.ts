@@ -1,5 +1,5 @@
-import { Foo, Bar } from "./model"
-import { RootData } from "./RootData"
+import { Foo, Bar } from "../model/model"
+import { RootData } from "../model/RootData"
 
 const root = new RootData()
 

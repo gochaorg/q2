@@ -1,5 +1,5 @@
-import { RemoteDataSource, NamedRemoteDataSource } from './RemoteDataSource';
-import { Foo, Bar } from './model';
+import { RemoteDataSource, NamedRemoteDataSource } from '../ds/RemoteDataSource';
+import { Foo, Bar } from '../model/model';
 import * as esParser from "esprima"
 
 const foo = new NamedRemoteDataSource<Foo>( 'http://localhost:19500/api', 'foo' )

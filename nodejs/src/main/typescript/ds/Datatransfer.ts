@@ -1,5 +1,5 @@
 import ax from "axios"
-import { Foo } from './model'
+import { Foo } from '../model/model'
 import * as parser from "esprima"
 
 /**

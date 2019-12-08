@@ -1,5 +1,5 @@
 import { Foo, Bar } from "./model"
-import { LocalDataSource } from "./LocalDataSource"
+import { LocalDataSource } from "../ds/LocalDataSource"
 
 let src1:Foo[] = [
     {id:1,name:"fooA"},
