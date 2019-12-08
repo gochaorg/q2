@@ -65,7 +65,7 @@ export abstract class RemoteDataSource<T> implements ApiCall, DataSource<T> {
 /**
  * Описывает манипуляции с однотипным источником данных
  */
-export class NamedRemoteDataSource<T> extends RemoteDataSource<T> implements DataSource<T> {
+export class NamedDataSource<T> extends RemoteDataSource<T> {
     /** расположение api */
     readonly api:string
 

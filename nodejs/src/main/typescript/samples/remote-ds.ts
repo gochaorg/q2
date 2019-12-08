@@ -1,9 +1,9 @@
-import { RemoteDataSource, NamedRemoteDataSource } from '../ds/remote/RemoteDataSource';
+import { RemoteDataSource, NamedDataSource } from '../ds/remote/RemoteDataSource';
 import { Foo, Bar } from '../model/model';
 import * as esParser from "esprima"
 
-const foo = new NamedRemoteDataSource<Foo>( 'http://localhost:19500/api', 'foo' )
-const bar = new NamedRemoteDataSource<Bar>( 'http://localhost:19500/api', 'bar' )
+const foo = new NamedDataSource<Foo>( 'http://localhost:19500/api', 'foo' )
+const bar = new NamedDataSource<Bar>( 'http://localhost:19500/api', 'bar' )
 
 // Демонстрация
 async function demo() {
