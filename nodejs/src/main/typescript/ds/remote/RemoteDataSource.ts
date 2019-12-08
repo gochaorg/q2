@@ -1,5 +1,3 @@
-import ax from "axios";
-import { DataSource } from '../DataSource';
 import { fetchData } from "./Datatransfer"
 import * as esParser from "esprima"
 
@@ -11,7 +9,7 @@ export interface ApiCall {
 /**
  * Удаленный(внешний) источник данных
  */
-export abstract class RemoteDataSource<T> implements ApiCall, DataSource<T> {
+export abstract class RemoteDataSource<T> implements ApiCall {
     /** Создание запроса */
     abstract get expression() :any
 
