@@ -1,5 +1,5 @@
 import ax from "axios";
-import { DataSource } from './DataSource';
+import { DataSource } from '../DataSource';
 import { fetchData } from "./Datatransfer"
 import * as esParser from "esprima"
 

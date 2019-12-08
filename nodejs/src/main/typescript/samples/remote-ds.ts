@@ -1,4 +1,4 @@
-import { RemoteDataSource, NamedRemoteDataSource } from '../ds/RemoteDataSource';
+import { RemoteDataSource, NamedRemoteDataSource } from '../ds/remote/RemoteDataSource';
 import { Foo, Bar } from '../model/model';
 import * as esParser from "esprima"
 

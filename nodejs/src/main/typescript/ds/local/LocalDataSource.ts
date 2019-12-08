@@ -1,4 +1,4 @@
-import { DataSource } from './DataSource';
+import { DataSource } from '../DataSource';
 
 /**
  * Описывает манипуляции с однотипным источником данных
