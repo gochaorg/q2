@@ -1,7 +1,4 @@
 package xyz.cofe.q2.query
-
-import xyz.cofe.q2.query.ast.Expr
-
 /**
  * Ошибочный план
  */
@@ -11,7 +8,7 @@ class PlanError extends Error {
      * @param message текст сообщения
      * @param expr шаг на котором сломался план
      */
-    PlanError( String message, Expr expr){
+    PlanError(String message, DsExpr expr){
         super(message)
         this.expr = expr
     }
@@ -19,5 +16,5 @@ class PlanError extends Error {
     /**
      * шаг на котором сломался план
      */
-    Expr expr
+    DsExpr expr
 }

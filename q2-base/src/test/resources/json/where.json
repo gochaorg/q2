@@ -1,0 +1,56 @@
+{
+  "type": "Where",
+  "filter": {
+    "code": "row => row.id == 1",
+    "ast": {
+      "tree": {
+        "type": "Program",
+        "body": [
+          {
+            "type": "ExpressionStatement",
+            "expression": {
+              "type": "ArrowFunctionExpression",
+              "id": null,
+              "params": [
+                {
+                  "type": "Identifier",
+                  "name": "row"
+                }
+              ],
+              "body": {
+                "type": "BinaryExpression",
+                "operator": "==",
+                "left": {
+                  "type": "MemberExpression",
+                  "computed": false,
+                  "object": {
+                    "type": "Identifier",
+                    "name": "row"
+                  },
+                  "property": {
+                    "type": "Identifier",
+                    "name": "id"
+                  }
+                },
+                "right": {
+                  "type": "Literal",
+                  "value": 1,
+                  "raw": "1"
+                }
+              },
+              "generator": false,
+              "expression": true,
+              "async": false
+            }
+          }
+        ],
+        "sourceType": "script"
+      },
+      "parser": "esprima"
+    }
+  },
+  "dataSource": {
+    "type": "From",
+    "name": "foo"
+  }
+}

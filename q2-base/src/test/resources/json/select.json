@@ -1,0 +1,201 @@
+{
+  "type": "Select",
+  "source": {
+    "type": "From",
+    "name": "foo"
+  },
+  "mapping": {
+    "id": {
+      "code": "foo => foo.id",
+      "ast": {
+        "tree": {
+          "type": "Program",
+          "body": [
+            {
+              "type": "ExpressionStatement",
+              "expression": {
+                "type": "ArrowFunctionExpression",
+                "id": null,
+                "params": [
+                  {
+                    "type": "Identifier",
+                    "name": "foo"
+                  }
+                ],
+                "body": {
+                  "type": "MemberExpression",
+                  "computed": false,
+                  "object": {
+                    "type": "Identifier",
+                    "name": "foo"
+                  },
+                  "property": {
+                    "type": "Identifier",
+                    "name": "id"
+                  }
+                },
+                "generator": false,
+                "expression": true,
+                "async": false
+              }
+            }
+          ],
+          "sourceType": "script"
+        },
+        "parser": "esprima"
+      }
+    },
+    "id2": {
+      "code": "foo => foo.id + foo.id",
+      "ast": {
+        "tree": {
+          "type": "Program",
+          "body": [
+            {
+              "type": "ExpressionStatement",
+              "expression": {
+                "type": "ArrowFunctionExpression",
+                "id": null,
+                "params": [
+                  {
+                    "type": "Identifier",
+                    "name": "foo"
+                  }
+                ],
+                "body": {
+                  "type": "BinaryExpression",
+                  "operator": "+",
+                  "left": {
+                    "type": "MemberExpression",
+                    "computed": false,
+                    "object": {
+                      "type": "Identifier",
+                      "name": "foo"
+                    },
+                    "property": {
+                      "type": "Identifier",
+                      "name": "id"
+                    }
+                  },
+                  "right": {
+                    "type": "MemberExpression",
+                    "computed": false,
+                    "object": {
+                      "type": "Identifier",
+                      "name": "foo"
+                    },
+                    "property": {
+                      "type": "Identifier",
+                      "name": "id"
+                    }
+                  }
+                },
+                "generator": false,
+                "expression": true,
+                "async": false
+              }
+            }
+          ],
+          "sourceType": "script"
+        },
+        "parser": "esprima"
+      }
+    },
+    "name": {
+      "code": "foo => foo.name",
+      "ast": {
+        "tree": {
+          "type": "Program",
+          "body": [
+            {
+              "type": "ExpressionStatement",
+              "expression": {
+                "type": "ArrowFunctionExpression",
+                "id": null,
+                "params": [
+                  {
+                    "type": "Identifier",
+                    "name": "foo"
+                  }
+                ],
+                "body": {
+                  "type": "MemberExpression",
+                  "computed": false,
+                  "object": {
+                    "type": "Identifier",
+                    "name": "foo"
+                  },
+                  "property": {
+                    "type": "Identifier",
+                    "name": "name"
+                  }
+                },
+                "generator": false,
+                "expression": true,
+                "async": false
+              }
+            }
+          ],
+          "sourceType": "script"
+        },
+        "parser": "esprima"
+      }
+    },
+    "name2": {
+      "code": "foo => foo.name + foo.name",
+      "ast": {
+        "tree": {
+          "type": "Program",
+          "body": [
+            {
+              "type": "ExpressionStatement",
+              "expression": {
+                "type": "ArrowFunctionExpression",
+                "id": null,
+                "params": [
+                  {
+                    "type": "Identifier",
+                    "name": "foo"
+                  }
+                ],
+                "body": {
+                  "type": "BinaryExpression",
+                  "operator": "+",
+                  "left": {
+                    "type": "MemberExpression",
+                    "computed": false,
+                    "object": {
+                      "type": "Identifier",
+                      "name": "foo"
+                    },
+                    "property": {
+                      "type": "Identifier",
+                      "name": "name"
+                    }
+                  },
+                  "right": {
+                    "type": "MemberExpression",
+                    "computed": false,
+                    "object": {
+                      "type": "Identifier",
+                      "name": "foo"
+                    },
+                    "property": {
+                      "type": "Identifier",
+                      "name": "name"
+                    }
+                  }
+                },
+                "generator": false,
+                "expression": true,
+                "async": false
+              }
+            }
+          ],
+          "sourceType": "script"
+        },
+        "parser": "esprima"
+      }
+    }
+  }
+}

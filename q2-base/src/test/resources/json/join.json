@@ -1,0 +1,123 @@
+{
+  "type": "Join",
+  "source": {
+    "type": "Where",
+    "filter": {
+      "code": "foo => foo.id == 1",
+      "ast": {
+        "tree": {
+          "type": "Program",
+          "body": [
+            {
+              "type": "ExpressionStatement",
+              "expression": {
+                "type": "ArrowFunctionExpression",
+                "id": null,
+                "params": [
+                  {
+                    "type": "Identifier",
+                    "name": "foo"
+                  }
+                ],
+                "body": {
+                  "type": "BinaryExpression",
+                  "operator": "==",
+                  "left": {
+                    "type": "MemberExpression",
+                    "computed": false,
+                    "object": {
+                      "type": "Identifier",
+                      "name": "foo"
+                    },
+                    "property": {
+                      "type": "Identifier",
+                      "name": "id"
+                    }
+                  },
+                  "right": {
+                    "type": "Literal",
+                    "value": 1,
+                    "raw": "1"
+                  }
+                },
+                "generator": false,
+                "expression": true,
+                "async": false
+              }
+            }
+          ],
+          "sourceType": "script"
+        },
+        "parser": "esprima"
+      }
+    },
+    "dataSource": {
+      "type": "From",
+      "name": "foo"
+    }
+  },
+  "join": {
+    "type": "From",
+    "name": "bar"
+  },
+  "filter": {
+    "code": "(foo, bar) => foo.id == bar.fooId",
+    "ast": {
+      "tree": {
+        "type": "Program",
+        "body": [
+          {
+            "type": "ExpressionStatement",
+            "expression": {
+              "type": "ArrowFunctionExpression",
+              "id": null,
+              "params": [
+                {
+                  "type": "Identifier",
+                  "name": "foo"
+                },
+                {
+                  "type": "Identifier",
+                  "name": "bar"
+                }
+              ],
+              "body": {
+                "type": "BinaryExpression",
+                "operator": "==",
+                "left": {
+                  "type": "MemberExpression",
+                  "computed": false,
+                  "object": {
+                    "type": "Identifier",
+                    "name": "foo"
+                  },
+                  "property": {
+                    "type": "Identifier",
+                    "name": "id"
+                  }
+                },
+                "right": {
+                  "type": "MemberExpression",
+                  "computed": false,
+                  "object": {
+                    "type": "Identifier",
+                    "name": "bar"
+                  },
+                  "property": {
+                    "type": "Identifier",
+                    "name": "fooId"
+                  }
+                }
+              },
+              "generator": false,
+              "expression": true,
+              "async": false
+            }
+          }
+        ],
+        "sourceType": "script"
+      },
+      "parser": "esprima"
+    }
+  }
+}

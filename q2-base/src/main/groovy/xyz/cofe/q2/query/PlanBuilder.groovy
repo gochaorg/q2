@@ -2,11 +2,6 @@ package xyz.cofe.q2.query
 
 
 import xyz.cofe.q2.meta.MetaData
-import xyz.cofe.q2.query.ast.Expr
-import xyz.cofe.q2.query.ast.From
-import xyz.cofe.q2.query.ast.Join
-import xyz.cofe.q2.query.ast.Select
-import xyz.cofe.q2.query.ast.Where
 
 import java.util.function.BiPredicate
 import java.util.function.Function
@@ -31,7 +26,7 @@ class PlanBuilder {
      * Создает запрос к даннным
      * @param query тело запроса
      */
-    Expr build( Map query ){
+    DsExpr build(Map query ){
         if( query == null ) throw new IllegalArgumentException("query==null");
 
         if( query.type=='From' && query.name instanceof String ){
@@ -39,7 +34,7 @@ class PlanBuilder {
         }
 
         if( query.type=='Where' && query.dataSource instanceof Map ){
-            Expr ds = build(query.dataSource as Map)
+            DsExpr ds = build(query.dataSource as Map)
             Where where = new Where(origin: ds.compile())
             if( query.filter?.ast?.tree && query.filter?.ast?.parser == 'esprima' ){
                 Closure clFilter = new EsPrimaCompiler().compile(query.filter.ast.tree)
@@ -52,8 +47,8 @@ class PlanBuilder {
             if( query.source==null )throw new Error("undefined `source` of join operation")
             if( query.join==null )throw new Error("undefined `join` of join opertation")
 
-            Expr sourceDatasource = build(query.source as Map)
-            Expr joinDatasource = build(query.join as Map)
+            DsExpr sourceDatasource = build(query.source as Map)
+            DsExpr joinDatasource = build(query.join as Map)
 
             Join joinOp = new Join()
             joinOp.origin = sourceDatasource.compile()
@@ -85,7 +80,7 @@ class PlanBuilder {
                 }
             }
 
-            Expr origin = build(query.source as Map)
+            DsExpr origin = build(query.source as Map)
 
             Select selectOp = new Select()
             selectOp.origin = origin.compile()

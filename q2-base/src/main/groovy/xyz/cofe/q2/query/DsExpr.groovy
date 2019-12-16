@@ -1,11 +1,11 @@
-package xyz.cofe.q2.query.ast
+package xyz.cofe.q2.query
 
 import xyz.cofe.q2.DataSource
 
 /**
  * Узел плана запросов
  */
-interface Expr {
+interface DsExpr {
     /** Компиляция */
     DataSource compile();
 }
