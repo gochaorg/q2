@@ -12,11 +12,19 @@ export abstract class RemoteDataSource<T> {
     abstract get api() :string
 
     /**
+     * Отладка
+     */
+    static debug:boolean = false
+
+    /**
      * Прямое извлечение данных
      * @param consumer получатель данных
      */
     async pick(consumer:(row:T)=>any ){
         const payLoad = this.expression
+        if( RemoteDataSource.debug ){
+            console.log("query payLoad:",JSON.stringify(payLoad))
+        }
         await fetchData<T>( this.api, payLoad,
             {
                 ok: rows=>{

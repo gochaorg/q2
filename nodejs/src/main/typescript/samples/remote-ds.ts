@@ -2,6 +2,8 @@ import { RemoteDataSource, NamedDataSource } from '../ds/remote/RemoteDataSource
 import { Foo, Bar } from '../model/model';
 import * as esParser from "esprima"
 
+RemoteDataSource.debug = true
+
 const foo = new NamedDataSource<Foo>( 'http://localhost:19500/api', 'foo' )
 const bar = new NamedDataSource<Bar>( 'http://localhost:19500/api', 'bar' )
 

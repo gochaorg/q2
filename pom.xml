@@ -15,7 +15,7 @@
 <!--        <groovy.art>groovy-all</groovy.art>-->
 <!--        <groovy.ver>[2.5.8],[3.0.0-rc-1]</groovy.ver>-->
         <groovy.art>groovy</groovy.art>
-        <groovy.ver>[3.0.0-rc-1]</groovy.ver>
+        <groovy.ver>[3.0.0-rc-2]</groovy.ver>
         <groovy.type>pom</groovy.type>
 
         <junit.ver>4.12</junit.ver>
